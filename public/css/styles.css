@@ -1,11 +1,10 @@
-
 body {
-  background-color: #E8ECEF;
+  background-color: #e8ecef;
 }
 
 .centered {
-    padding-top: 200px;
-    text-align: center;
+  padding-top: 200px;
+  text-align: center;
 }
 
 .secret-text {
@@ -13,4 +12,50 @@ body {
   font-size: 2rem;
   color: #fff;
   background-color: #000;
+}
+
+/* FOTTER */
+.footer-padding {
+  padding-bottom: 60px;
+}
+
+.footer {
+  position: absolute;
+  text-align: center;
+  bottom: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #546e9e;
+}
+
+.footer p {
+  /* margin-top: 25px; */
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin: 0;
+}
+
+.footer-items {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 30px 20px;
+}
+
+.author-link {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  color: #fff;
+}
+.author-link:hover {
+  color: #fff;
+}
+
+.icon {
+  padding-right: 5px;
 }

@@ -12,6 +12,18 @@ app.use(bodyParser.urlencoded({extended:true})); // read data that is entered in
 
 app.use(express.static('public')); // name of folder where the styles and the images of the webpage are
 
+app.get('/' ,function(req,res){
+    res.render('home');
+})
+
+app.get('/login' ,function(req,res){
+    res.render('login');
+})
+
+app.get('/register' ,function(req,res){
+    res.render('register');
+})
+
 
 
 
