@@ -6,7 +6,9 @@ const ejs = require('ejs');
 const mongoose= require('mongoose');
 const { get } = require('express/lib/response');
 // const encrypt = require('mongoose-encryption');
-const md5 = require('md5');
+// const md5 = require('md5');
+const bcrypt = require('bcrypt');
+const saltRounds=10;
 
 
 const app= express();
@@ -42,7 +44,8 @@ app.get('/register' ,function(req,res){
 
 app.post('/register', function(req,res){
     const newUsername=req.body.username;
-    const newPassword= md5(req.body.password);
+    const newPassword= req.body.password;
+    
     User.findOne({username:newUsername}, function(err, foundUser){
         if(!err){
             if (foundUser) {
@@ -50,17 +53,20 @@ app.post('/register', function(req,res){
                 res.redirect('/register')
                 
             }else{
-                const newUser = new User({
-                    username:newUsername,
-                    password:newPassword
-                });
-                newUser.save(function(err){
-                    if (err) {
-                        console.log(err);
-                    }else{
-                        res.render('secrets')
-                    }
-                });
+                bcrypt.hash(newPassword, saltRounds,function (err, hash) {
+                    const newUser = new User({
+                        username:newUsername,
+                        password:hash
+                    });
+                    newUser.save(function(err){
+                        if (err) {
+                            console.log(err);
+                        }else{
+                            res.render('secrets')
+                        }
+                    });
+                })
+                
                 // console.log('Congratulations, you are now registerd');
 
             }
@@ -71,14 +77,16 @@ app.post('/register', function(req,res){
 
 app.post('/login', function (req,res) {
     const existingUsername= req.body.username;
-    const existingPassword= md5(req.body.password);
+    const existingPassword= req.body.password;
     User.findOne({
         username:existingUsername}, function (err, foundUser) {
             if (!err) {
                 if (foundUser) {
-                    if (foundUser.password===existingPassword) {
-                        res.render('secrets')
-                    }else res.redirect('/login');                    
+                    bcrypt.compare(existingPassword, foundUser.password, function(err, result) {
+                        if (result===true) {
+                            res.render('secrets')
+                        }else res.redirect('/login');
+                    });                 
                 }else{
                     res.redirect('/login');
                 }
