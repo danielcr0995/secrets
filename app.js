@@ -4,6 +4,7 @@ const express=require('express');
 const bodyParser=require('body-parser');
 const ejs = require('ejs');
 const mongoose= require('mongoose');
+const { get } = require('express/lib/response');
 
 
 const app= express();
@@ -63,7 +64,21 @@ app.post('/register', function(req,res){
     
 });
 
-
+app.post('/login', function (req,res) {
+    const existingUsername=req.body.username;
+    const existingPassword= req.body.password;
+    User.findOne({
+        username:existingUsername,
+        password:existingPassword}, function (err, foundUser) {
+            if (!err) {
+                if (foundUser) {
+                    res.render('secrets')
+                }else{
+                    res.redirect('/login')
+                }
+            }else console.log(err);
+        });
+})
 
 
 
