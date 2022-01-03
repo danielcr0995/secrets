@@ -37,7 +37,8 @@ mongoose.connect('mongodb://localhost:27017/secretsDB')
 const userSchema= new mongoose.Schema ({ //dont need to add this if you are not doing anything fancy
     username:String,
     password:String,
-    googleID:String
+    googleID:String,
+    secret: [String]
 
 });
 
@@ -102,10 +103,43 @@ app.get('/register' ,function(req,res){
 });
 
 app.get('/secrets', function(req,res){
-    if (req.isAuthenticated()){
-        res.render('secrets');
-    }else res.redirect('/login');
+    // if (req.isAuthenticated()){
+    //     res.render('secrets');
+    // }else res.redirect('/login');
+    User.find({secret: {$ne : null}}, function (err, foundUsers) {
+        if (!err) {
+            if (foundUsers){
+                // console.log(foundUser);
+                res.render('secrets',
+                {usersWithSecrets:foundUsers });
+
+            }
+            
+        }else console.log(err);
+    })
 });
+
+app.get('/submit', function (req,res) {
+    if (req.isAuthenticated()){
+        res.render('submit');
+    }else res.redirect('/login');
+})
+
+app.post('/submit', function (req,res) {
+    const secret=req.body.secret;
+    // console.log(req.user.id);
+
+    User.findById(req.user.id, function (err, foundUser) {
+        if (!err) {
+            if (foundUser) {
+                foundUser.secret.push(secret);
+                foundUser.save(function () {
+                    res.redirect('/secrets')
+                })
+            }
+        }
+    })
+})
 
 app.get('/logout', function (req,res) {
     req.logout();
