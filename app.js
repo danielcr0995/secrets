@@ -5,16 +5,20 @@ const bodyParser=require('body-parser');
 const ejs = require('ejs');
 const mongoose= require('mongoose');
 const { get } = require('express/lib/response');
+const encrypt = require('mongoose-encryption');
 
 
 const app= express();
 
 mongoose.connect('mongodb://localhost:27017/secretsDB')
 
-const userSchema=  {
+const userSchema= new mongoose.Schema ({ //dont need to add this if you are not doing anything fancy
     username:String,
     password:String
-};
+});
+
+const secret= '';
+userSchema.plugin(encrypt,{secret:secret, encryptedFields:['password']});
 
 const User = mongoose.model('User', userSchema);
 
@@ -68,13 +72,14 @@ app.post('/login', function (req,res) {
     const existingUsername=req.body.username;
     const existingPassword= req.body.password;
     User.findOne({
-        username:existingUsername,
-        password:existingPassword}, function (err, foundUser) {
+        username:existingUsername}, function (err, foundUser) {
             if (!err) {
                 if (foundUser) {
-                    res.render('secrets')
+                    if (foundUser.password===existingPassword) {
+                        res.render('secrets')
+                    }else res.redirect('/login');                    
                 }else{
-                    res.redirect('/login')
+                    res.redirect('/login');
                 }
             }else console.log(err);
         });
