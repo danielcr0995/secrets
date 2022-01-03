@@ -40,21 +40,30 @@ app.post('/register', function(req,res){
     User.findOne({username:newUsername}, function(err, foundUser){
         if(!err){
             if (foundUser) {
-                console.log('User already exists');
+                // alert('Username already exists')
+                res.redirect('/register')
                 
             }else{
                 const newUser = new User({
                     username:newUsername,
                     password:newPassword
                 });
-                newUser.save();
-                console.log('Congratulations, you are now registerd');
+                newUser.save(function(err){
+                    if (err) {
+                        console.log(err);
+                    }else{
+                        res.render('secrets')
+                    }
+                });
+                // console.log('Congratulations, you are now registerd');
 
             }
         }
-    })
+    });
     
-})
+});
+
+
 
 
 
