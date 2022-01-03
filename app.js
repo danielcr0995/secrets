@@ -66,6 +66,11 @@ app.get('/secrets', function(req,res){
     }else res.redirect('/login');
 })
 
+app.get('/logout', function (req,res) {
+    req.logout();
+    res.redirect('/');
+})
+
 app.post('/register', function(req,res){
     const newUsername=req.body.username;
     const newPassword= req.body.password;
@@ -94,12 +99,12 @@ app.post('/login', function (req,res) {
         password: existingPassword
     });
 
-    req.login(user, function (req, res){
+    req.login(user, function (err){
         if(!err){
             passport.authenticate('local')(req,res,function () {
                 res.redirect('/secrets')
             })
-        }
+        }else console.log(err);
     })
 })
 
